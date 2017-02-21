@@ -12,7 +12,7 @@ class Parser(object):
         """parses the article in self.file_name
         Returns a pandas dataframe"""
         tfidf_file = open(self.file_name)
-        tfidf = tfidf_file.read().split("\n")
+        tfidf = tfidf_file.read().strip().split("\n")
         labels = []
         for i in range(DICT_LEN):
             labels.append(i)
