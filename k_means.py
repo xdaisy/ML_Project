@@ -8,12 +8,12 @@ import sys
 # find k mean clusters
 def cluster(train, k):
     dim = train.shape
-    cluster = np.zeros((3, dim[1]))
+    cluster_center = np.zeros((3, dim[1]))
     # initialize cluster mean
     for i in range(k):
         # get random document from training data
         row = random.randint(0, dim[0] - 1)
-        cluster[i, :] = train[row, :]
+        cluster_center[i, :] = np.copy(train[row, :])
         #for j in range(dim[1]):
         #    cluster[i, j] = train[row, j]
     cluster_idx = np.zeros((dim[0],))
@@ -25,10 +25,10 @@ def cluster(train, k):
         for i in range(dim[0]):
             clust = 0
             doc = train[i, :]
-            minDist = distance(cluster[0, :], doc)
+            minDist = distance(cluster_center[0, :], doc)
             # find closest cluster
             for j in range(1, k):
-                dist = distance(cluster[j, :], doc)
+                dist = distance(cluster_center[j, :], doc)
                 if dist < minDist:
                     clust = j
                     minDist = dist
@@ -42,13 +42,67 @@ def cluster(train, k):
         # find average
         converged = True
         for i in range(k):
+            # get mean of words
             mean = meanCluster[i, :] / cluster_count[i]
-            diff = distance(cluster[i, :], mean)
-            cluster[i, :] = mean
+            # compute distance between current mean and next mean
+            diff = distance(cluster_center[i, :], mean)
+            # put into cluster numpy
+            cluster_center[i, :] = np.copy(mean)
             if diff > 0.00001:
                 converged = False
+        # if converged, break out of loop
         if converged:
             break
+    # return cluster mean, and the index of which doc corresponds to which index
+    return cluster_center, cluster_idx
+
+# compute the closest document to each document in test data set
+def computeClosestDoc(train, test, cluster_center, cluster_idx):
+    # keep track of the results for each test doc
+    results = open("k_means_results.txt", "a")
+    results.seek(0)
+    results.truncate()
+    dim = test.shape
+    # go through each doc in test
+    for i in range(dim[0]):
+        closestCluster = findClosestCluster(test[i, :], cluster_center)
+        bestDoc = findBestDoc(test[i, :], train, cluster_idx, closestCluster)
+        results.write("test doc: " + test.index[i] + ", best doc: " + train.index[bestDoc] + "\n")
+
+
+# find closest cluster
+def findClosestCluster(x_i, cluster_center):
+    cluster = 0
+    minDist = distance(x_i, cluster_center[0, :])
+    dim = cluster_center.shape
+    for i in range(1, dim[0]):
+        # compute distance
+        dist = distance(x_i, cluster_center[i, :])
+        # set i as closest cluster if dist < minDist
+        if dist < minDist:
+            cluster = i
+            minDist = dist
+    # return index of closest cluster
+    return cluster
+
+# find closest doc to x_i
+def findBestDoc(x_i, train, cluster_idx, closestCluster):
+    bestDoc = -1
+    minDist = sys.maxsize
+    dim = train.shape
+    for i in range(dim[0]):
+        # if not same cluster, skip
+        if cluster_idx[i] != closestCluster:
+            pass
+        # compute distance between doc i in training set and current doc in test set
+        dist = distance(x_i, train[i, :])
+        # if have smaller dist, set bestDoc and minDist
+        if dist < minDist:
+            bestDoc = i
+            minDist = dist
+    # return index of best document
+    return bestDoc
+
 # compute distance
 def distance(vector1, vector2):
     diff = vector2 - vector1
@@ -59,9 +113,11 @@ def main():
     p_train = parser.Parser("tfidf_train.txt")
     # parse training data
     train = p_train.parse()
-    cluster(train, sys.argv[1])
+    cluster_center, cluster_idx = cluster(train, sys.argv[1])
     # parse testing data
-
+    p_test = parser.Parser("tfidf_test.txt")
+    test = p_test.parse()
+    computeClosestDoc(train, test, cluster_center, cluster_idx)
 
 if __name__ == "__init__":
     main()
