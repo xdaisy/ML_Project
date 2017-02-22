@@ -13,27 +13,48 @@ p = parser.Parser("tfidf.txt")
 # find k mean clusters
 def cluster(train):
     k = 3
-    cluster = np.zeros((3, train.shape[1]))
+    dim = train.shape
+    cluster = np.zeros((3, dim[1]))
     # initialize cluster mean
     for i in range(k):
         # get random document from training data
-        row = random.randint(0, train.shape[0] - 1)
-        for j in range(train.shape[1]):
-            cluster[i, j] = train[row, j]
-    cluster_idx = np.zeros((train.shape[0]))
+        row = random.randint(0, dim[0] - 1)
+        cluster[i, :] = train[row, :]
+        #for j in range(dim[1]):
+        #    cluster[i, j] = train[row, j]
+    cluster_idx = np.zeros((dim[0],))
+    cluster_count = np.zeros((3,))
     iterations = 100
     # get cluster mean
-    for i in range(iterations):
-        clust = 0
-        vector = train[i, :]
-        minDist = distance(cluster[0, :], vector)
-        for j in range(1, 3):
-            dist = distance(cluster[j, :], vector)
-            if (dist < minDist)
-                clust = j
-                minDist = dist
-
-
+    for it in range(iterations):
+        # for each document, find cluster
+        for i in range(dim[0]):
+            clust = 0
+            doc = train[i, :]
+            minDist = distance(cluster[0, :], doc)
+            # find closest cluster
+            for j in range(1, k):
+                dist = distance(cluster[j, :], doc)
+                if dist < minDist:
+                    clust = j
+                    minDist = dist
+            cluster_idx[i] = clust
+            cluster_count[clust] += 1
+        # calculate mean cluster
+        meanCluster = np.zeros((3, dim.shape[1]))
+        # add up values for each cluster
+        for i in range(dim[0]):
+            cluster = cluster_idx[i]
+            meanCluster[cluster, :] += train[i, :]
+        # find average
+        converged = True
+        for i in range(k):
+            mean = meanCluster[i, :] / cluster_count[i]
+            diff = distance(cluster[i, :], mean)
+            if diff > 0.00001:
+                converged = False
+        if converged:
+            break
 # compute distance
 def distance(vector1, vector2):
     diff = vector2 - vector1
