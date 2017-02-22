@@ -45,5 +45,6 @@ def computeDegree(affinity):
     return degree_matrix
 
 
+
 def computeLaplacian(affinity, degree):
     return degree - affinity

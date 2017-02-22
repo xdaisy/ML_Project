@@ -3,16 +3,10 @@ import pandas as pd
 import parser
 import random
 import math
-
-# get parser
-p = parser.Parser("tfidf.txt")
-# parse training data
-
-#parse testing data
+import sys
 
 # find k mean clusters
-def cluster(train):
-    k = 3
+def cluster(train, k):
     dim = train.shape
     cluster = np.zeros((3, dim[1]))
     # initialize cluster mean
@@ -44,13 +38,13 @@ def cluster(train):
         meanCluster = np.zeros((3, dim.shape[1]))
         # add up values for each cluster
         for i in range(dim[0]):
-            cluster = cluster_idx[i]
-            meanCluster[cluster, :] += train[i, :]
+            meanCluster[cluster_idx[i], :] += train[i, :]
         # find average
         converged = True
         for i in range(k):
             mean = meanCluster[i, :] / cluster_count[i]
             diff = distance(cluster[i, :], mean)
+            cluster[i, :] = mean
             if diff > 0.00001:
                 converged = False
         if converged:
@@ -59,3 +53,15 @@ def cluster(train):
 def distance(vector1, vector2):
     diff = vector2 - vector1
     return math.sqrt(np.dot(diff.T, diff))
+
+def main():
+    # get parser
+    p_train = parser.Parser("tfidf_train.txt")
+    # parse training data
+    train = p_train.parse()
+    cluster(train, sys.argv[1])
+    # parse testing data
+
+
+if __name__ == "__init__":
+    main()
