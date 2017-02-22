@@ -25,7 +25,7 @@ class Parser(object):
         for article in tfidf:
             article_name, data = self.parse_article(article)
             self.df.loc[article_name] = data
-        return self.df
+        return self.df.astype(float)
 
 
     def parse_article(self, article):

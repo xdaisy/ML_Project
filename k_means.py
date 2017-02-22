@@ -8,12 +8,16 @@ import sys
 # find k mean clusters
 def cluster(train, k):
     dim = train.shape
-    cluster_center = np.zeros((3, dim[1]))
+    cluster_center = np.zeros((k, dim[1]))
     train_np = train.values
     # initialize cluster mean
+    chosen_rows = []
     for i in range(k):
         # get random document from training data
         row = random.randint(0, dim[0] - 1)
+        while row in chosen_rows:
+            row = random.randint(0, dim[0] - 1)
+        chosen_rows.append(row)
         cluster_center[i] = train_np[row]
         #for j in range(dim[1]):
         #    cluster[i, j] = train[row, j]
@@ -22,6 +26,7 @@ def cluster(train, k):
     iterations = 100
     # get cluster mean
     for it in range(iterations):
+        print "."
         # for each document, find cluster
         for i in range(dim[0]):
             clust = 0
@@ -54,6 +59,7 @@ def cluster(train, k):
         # if converged, break out of loop
         if converged:
             break
+
     # return cluster mean, and the index of which doc corresponds to which index
     return cluster_center, cluster_idx
 
@@ -106,15 +112,13 @@ def findBestDoc(x_i, train, cluster_idx, closestCluster):
 
 # compute distance
 def distance(vector1, vector2):
-    print vector1
-    print vector2
     diff = vector2 - vector1
     return math.sqrt(np.dot(diff.T, diff))
 
 def main():
     # get parser
     print 1
-    p_train = Parser.Parser("tfidf_small.txt")
+    p_train = Parser.Parser("tfidf_test.txt")
     print 2
     # parse training data
     train = p_train.parse()
@@ -122,6 +126,7 @@ def main():
     cluster_center, cluster_idx = cluster(train, int(sys.argv[1]))
     print 4
     print cluster_center
+    print cluster_center.shape
     print cluster_idx
     print 5
     # parse testing data
