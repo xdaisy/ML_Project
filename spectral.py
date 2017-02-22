@@ -2,22 +2,8 @@ import numpy as np
 import pandas as pd
 import parser
 import math
-
-# pass in text file name to constructor to parse training and test data
-p = parser.Parser("tfidf_small.txt")
-# parse training data
-
-# parse testing data
-
-def cluster(train):
-    dim_train = train.shape
-    # affinity matrix, is numpy array
-    affinity = computeAffinity(train)
-    # degree matrix, is numpy array
-    degree = computeDegree(affinity)
-    # laplcian matrix, is numpy array
-    laplacian = computeLaplacian(affinity, degree)
-
+import sys
+import k_means
 
 def distance(vector1, vector2):
     diff = vector2 - vector1
@@ -48,3 +34,29 @@ def computeDegree(affinity):
 
 def computeLaplacian(affinity, degree):
     return degree - affinity
+
+# returns the first k eigen vectors of the laplacian matrix
+def computeEigen(laplacian, k):
+    U, S, V = np.linalg.svd(laplacian)
+    result = U[:k]
+    return result
+
+def main():
+    k = sys.argv[1]
+    p = parser.Parser("tfidf_small.txt")
+    train = p.parse()
+    # affinity matrix, is numpy array
+    affinity = computeAffinity(train)
+    # degree matrix, is numpy array
+    degree = computeDegree(affinity)
+    # laplcian matrix, is numpy array
+    laplacian = computeLaplacian(affinity, degree)
+    # compute eigen vectors
+    U = computeEigen(laplacian, k)
+    # run k_means
+    k_means_results = k_means.cluster(U, k)
+    # display the data:
+    print k_means_results
+
+if __name__ == "__init__":
+    main()
