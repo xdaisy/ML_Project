@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import parser
+import Parser
 import math
 import sys
 import k_means
@@ -43,7 +43,7 @@ def computeEigen(laplacian, k):
 
 def main():
     k = sys.argv[1]
-    p = parser.Parser("tfidf_small.txt")
+    p = Parser.Parser("tfidf_small.txt")
     train = p.parse()
     # affinity matrix, is numpy array
     affinity = computeAffinity(train)
@@ -58,5 +58,5 @@ def main():
     # display the data:
     print k_means_results
 
-if __name__ == "__init__":
+if __name__ == "__main__":
     main()

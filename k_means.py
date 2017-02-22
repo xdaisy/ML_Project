@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import parser
+import Parser
 import random
 import math
 import sys
@@ -9,11 +9,12 @@ import sys
 def cluster(train, k):
     dim = train.shape
     cluster_center = np.zeros((3, dim[1]))
+    train_np = train.values
     # initialize cluster mean
     for i in range(k):
         # get random document from training data
         row = random.randint(0, dim[0] - 1)
-        cluster_center[i, :] = np.copy(train[row, :])
+        cluster_center[i] = train_np[row]
         #for j in range(dim[1]):
         #    cluster[i, j] = train[row, j]
     cluster_idx = np.zeros((dim[0],))
@@ -24,7 +25,7 @@ def cluster(train, k):
         # for each document, find cluster
         for i in range(dim[0]):
             clust = 0
-            doc = train[i, :]
+            doc = train_np[i, :]
             minDist = distance(cluster_center[0, :], doc)
             # find closest cluster
             for j in range(1, k):
@@ -35,10 +36,10 @@ def cluster(train, k):
             cluster_idx[i] = clust
             cluster_count[clust] += 1
         # calculate mean cluster
-        meanCluster = np.zeros((3, dim.shape[1]))
+        meanCluster = np.zeros((3, dim[1]))
         # add up values for each cluster
         for i in range(dim[0]):
-            meanCluster[cluster_idx[i], :] += train[i, :]
+            meanCluster[cluster_idx[i], :] += train_np[i, :]
         # find average
         converged = True
         for i in range(k):
@@ -105,19 +106,30 @@ def findBestDoc(x_i, train, cluster_idx, closestCluster):
 
 # compute distance
 def distance(vector1, vector2):
+    print vector1
+    print vector2
     diff = vector2 - vector1
     return math.sqrt(np.dot(diff.T, diff))
 
 def main():
     # get parser
-    p_train = parser.Parser("tfidf_train.txt")
+    print 1
+    p_train = Parser.Parser("tfidf_small.txt")
+    print 2
     # parse training data
     train = p_train.parse()
-    cluster_center, cluster_idx = cluster(train, sys.argv[1])
+    print 3
+    cluster_center, cluster_idx = cluster(train, int(sys.argv[1]))
+    print 4
+    print cluster_center
+    print cluster_idx
+    print 5
     # parse testing data
+    """
     p_test = parser.Parser("tfidf_test.txt")
     test = p_test.parse()
     computeClosestDoc(train, test, cluster_center, cluster_idx)
+    """
 
-if __name__ == "__init__":
+if __name__ == "__main__":
     main()
