@@ -14,14 +14,14 @@ def cluster(train, k):
     for i in range(k):
         # get random document from training data
         row = random.randint(0, dim[0] - 1)
-        while row in chosen_rows:
+        while row in chosen_rows or too_close(row, chosen_rows, train):
             row = random.randint(0, dim[0] - 1)
         chosen_rows.append(row)
         cluster_center[i] = train[row]
         #for j in range(dim[1]):
         #    cluster[i, j] = train[row, j]
     cluster_idx = np.zeros((dim[0],))
-    cluster_count = np.zeros((3,))
+    cluster_count = np.zeros((k,))
     iterations = 100
     # get cluster mean
     for it in range(iterations):
@@ -40,7 +40,7 @@ def cluster(train, k):
             cluster_idx[i] = clust
             cluster_count[clust] += 1
         # calculate mean cluster
-        meanCluster = np.zeros((3, dim[1]))
+        meanCluster = np.zeros((k, dim[1]))
         # add up values for each cluster
         for i in range(dim[0]):
             meanCluster[cluster_idx[i], :] += train[i, :]
@@ -114,26 +114,45 @@ def distance(vector1, vector2):
     diff = vector2 - vector1
     return math.sqrt(np.dot(diff.T, diff))
 
+def too_close(row, chosen_rows, train):
+    for i in range(len(chosen_rows)):
+        print distance(train[row], train[chosen_rows[i]])
+        if distance(train[row], train[chosen_rows[i]]) < 15:
+            print "too close"
+            return True
+    print "good"
+    return False
+
 def main():
+    global group_num
     # get parser
+    k = int(sys.argv[1])
     print 1
-    p_train = Parser.Parser("tfidf_small.txt")
+    p_train = Parser.Parser("tfidf_medium.txt")
     print 2
     # parse training data
     train = p_train.parse()
     print 3
-    cluster_center, cluster_idx = cluster(train.values, int(sys.argv[1]))
+    cluster_center, cluster_idx = cluster(train.values, k)
     print 4
     print cluster_center
     print cluster_center.shape
     print cluster_idx
     print 5
-    # parse testing data
-    """
-    p_test = parser.Parser("tfidf_test.txt")
-    test = p_test.parse()
-    computeClosestDoc(train, test, cluster_center, cluster_idx)
-    """
+    articles = train.index.values
+    groupings = {}
+    for i in range(k):
+        group_num = i
+        b = np.apply_along_axis(isInGroup, 0, cluster_idx)
+        groupings[i] = articles[b]
+    print(groupings)
+    for key in groupings:
+        print groupings[key].shape
+
+
+def isInGroup(a):
+    global group_num
+    return a == group_num
 
 if __name__ == "__main__":
     main()

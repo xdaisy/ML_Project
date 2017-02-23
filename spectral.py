@@ -44,8 +44,9 @@ def computeEigen(laplacian, k):
     return result
 
 def main():
+    global group_num
     k = int(sys.argv[1])
-    p = Parser.Parser("tfidf_small.txt")
+    p = Parser.Parser("tfidf_medium.txt")
     train = p.parse()
     # affinity matrix, is numpy array
     affinity = computeAffinity(train.values)
@@ -58,9 +59,20 @@ def main():
     # run k_means
     cluster_center, cluster_idx = k_means.cluster(U, k)
     # display the data:
-    print cluster_center
-    print cluster_center.shape
-    print cluster_idx
+    articles = train.index.values
+    groupings = {}
+    for i in range(k):
+        group_num = i
+        b = np.apply_along_axis(isInGroup, 0, cluster_idx)
+        groupings[i] = articles[b]
+    print(groupings)
+    for key in groupings:
+        print groupings[key].shape
+
+
+def isInGroup(a):
+    global group_num
+    return a == group_num
 
 if __name__ == "__main__":
     main()
