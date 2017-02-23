@@ -9,7 +9,6 @@ import sys
 def cluster(train, k):
     dim = train.shape
     cluster_center = np.zeros((k, dim[1]))
-    train_np = train.values
     # initialize cluster mean
     chosen_rows = []
     for i in range(k):
@@ -18,7 +17,7 @@ def cluster(train, k):
         while row in chosen_rows:
             row = random.randint(0, dim[0] - 1)
         chosen_rows.append(row)
-        cluster_center[i] = train_np[row]
+        cluster_center[i] = train[row]
         #for j in range(dim[1]):
         #    cluster[i, j] = train[row, j]
     cluster_idx = np.zeros((dim[0],))
@@ -30,7 +29,7 @@ def cluster(train, k):
         # for each document, find cluster
         for i in range(dim[0]):
             clust = 0
-            doc = train_np[i, :]
+            doc = train[i, :]
             minDist = distance(cluster_center[0, :], doc)
             # find closest cluster
             for j in range(1, k):
@@ -44,7 +43,7 @@ def cluster(train, k):
         meanCluster = np.zeros((3, dim[1]))
         # add up values for each cluster
         for i in range(dim[0]):
-            meanCluster[cluster_idx[i], :] += train_np[i, :]
+            meanCluster[cluster_idx[i], :] += train[i, :]
         # find average
         converged = True
         for i in range(k):
@@ -118,12 +117,12 @@ def distance(vector1, vector2):
 def main():
     # get parser
     print 1
-    p_train = Parser.Parser("tfidf_test.txt")
+    p_train = Parser.Parser("tfidf_small.txt")
     print 2
     # parse training data
     train = p_train.parse()
     print 3
-    cluster_center, cluster_idx = cluster(train, int(sys.argv[1]))
+    cluster_center, cluster_idx = cluster(train.values, int(sys.argv[1]))
     print 4
     print cluster_center
     print cluster_center.shape

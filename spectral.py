@@ -14,13 +14,14 @@ def computeAffinity(train):
     dim = train.shape
     affinity = np.zeros((dim[0], dim[0]))
     sigma = 10
-    for i in range(dim):
-        for j in range(dim):
+    for i in range(dim[0]):
+        for j in range(dim[0]):
             # if i == j, skip, don't compare to self
             if i == j:
                 affinity[i, j] = 0
                 continue
             affinity[i, j] = np.e**(-1 * distance(train[i, :], train[j,:]) / (2 * (sigma**2)))
+    return affinity
 
 
 def computeDegree(affinity):
@@ -38,15 +39,16 @@ def computeLaplacian(affinity, degree):
 # returns the first k eigen vectors of the laplacian matrix
 def computeEigen(laplacian, k):
     U, S, V = np.linalg.svd(laplacian)
-    result = U[:k]
+
+    result = U[:,:k]
     return result
 
 def main():
-    k = sys.argv[1]
+    k = int(sys.argv[1])
     p = Parser.Parser("tfidf_small.txt")
     train = p.parse()
     # affinity matrix, is numpy array
-    affinity = computeAffinity(train)
+    affinity = computeAffinity(train.values)
     # degree matrix, is numpy array
     degree = computeDegree(affinity)
     # laplcian matrix, is numpy array
@@ -54,9 +56,11 @@ def main():
     # compute eigen vectors
     U = computeEigen(laplacian, k)
     # run k_means
-    k_means_results = k_means.cluster(U, k)
+    cluster_center, cluster_idx = k_means.cluster(U, k)
     # display the data:
-    print k_means_results
+    print cluster_center
+    print cluster_center.shape
+    print cluster_idx
 
 if __name__ == "__main__":
     main()
