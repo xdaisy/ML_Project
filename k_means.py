@@ -14,7 +14,7 @@ def cluster(train, k):
     for i in range(k):
         # get random document from training data
         row = random.randint(0, dim[0] - 1)
-        while row in chosen_rows:
+        while row in chosen_rows or too_close(row, chosen_rows, train):
             row = random.randint(0, dim[0] - 1)
         chosen_rows.append(row)
         cluster_center[i] = train[row]
@@ -22,14 +22,12 @@ def cluster(train, k):
         #    cluster[i, j] = train[row, j]
     cluster_idx = np.zeros((dim[0],))
     cluster_count = np.zeros((k,))
-    iterations = 0
+    iterations = 100
     # get cluster mean
-    while True:
-        print iterations
-        iterations += 1
+    for it in range(iterations):
+        print "."
         # for each document, find cluster
         for i in range(dim[0]):
-            prev_clust = cluster_idx[i]
             clust = 0
             doc = train[i, :]
             minDist = distance(cluster_center[0, :], doc)
@@ -41,9 +39,7 @@ def cluster(train, k):
                     minDist = dist
             cluster_idx[i] = clust
             cluster_count[clust] += 1
-            cluster_count[prev_clust] -= 1
-
-        # initialize to zero
+        # calculate mean cluster
         meanCluster = np.zeros((k, dim[1]))
         # add up values for each cluster
         for i in range(dim[0]):
@@ -52,12 +48,12 @@ def cluster(train, k):
         converged = True
         for i in range(k):
             # get mean of words
-            new_mean = meanCluster[i, :] / cluster_count[i]
+            mean = meanCluster[i, :] / cluster_count[i]
             # compute distance between current mean and next mean
-            diff = distance(cluster_center[i, :], new_mean)
+            diff = distance(cluster_center[i, :], mean)
             # put into cluster numpy
-            cluster_center[i, :] = np.copy(new_mean)
-            if diff > 0.0000001:
+            cluster_center[i, :] = np.copy(mean)
+            if diff > 0.00001:
                 converged = False
         # if converged, break out of loop
         if converged:
@@ -132,7 +128,7 @@ def main():
     # get parser
     k = int(sys.argv[1])
     print 1
-    p_train = Parser.Parser("tfidf_medium_large.txt")
+    p_train = Parser.Parser("tfidf_medium.txt")
     print 2
     # parse training data
     train = p_train.parse()
