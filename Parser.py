@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import mysql
 
 DICT_LEN = 10575
 
@@ -22,9 +23,12 @@ class Parser(object):
         self.df = pd.DataFrame(index=rows, columns=pd.Series(labels))
         # print labels
         # print pd.Series(labels)
+        i = 0
         for article in tfidf:
             article_name, data = self.parse_article(article)
             self.df.loc[article_name] = data
+            print i
+            i += 1
         return self.df.astype(float)
 
 
@@ -40,5 +44,5 @@ class Parser(object):
         return article_comps[0], row
 
 if __name__ == "__main__":
-    p = Parser("tfidf_small.txt")
+    p = Parser("tfidf_test.txt")
     print(p.parse().dtypes)
