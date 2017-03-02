@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import mysql
+#import mysql
 
 DICT_LEN = 10575
 
@@ -27,7 +27,7 @@ class Parser(object):
         for article in tfidf:
             article_name, data = self.parse_article(article)
             self.df.loc[article_name] = data
-            print i
+            #print i
             i += 1
         return self.df.astype(float)
 
@@ -44,5 +44,6 @@ class Parser(object):
         return article_comps[0], row
 
 if __name__ == "__main__":
-    p = Parser("tfidf_test.txt")
-    print(p.parse().dtypes)
+    p = Parser("tfidf_train.txt")
+    df = p.parse()
+    df.to_csv('tfidf_train.csv')
