@@ -44,6 +44,6 @@ class Parser(object):
         return article_comps[0], row
 
 if __name__ == "__main__":
-    p = Parser("tfidf_train.txt")
+    p = Parser("tfidf_medium.txt")
     df = p.parse()
-    df.to_csv('tfidf_train.csv')
+    df.to_pickle('tfidf_medium.pkl')
