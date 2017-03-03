@@ -18,18 +18,16 @@ def cluster(train, k):
             row = random.randint(0, dim[0] - 1)
         chosen_rows.append(row)
         cluster_center[i] = train[row]
-        #for j in range(dim[1]):
-        #    cluster[i, j] = train[row, j]
-    cluster_idx = np.zeros((dim[0],))
-    cluster_count = np.zeros((k,))
+    # Nx1 array for keeping track of which point is in what cluster
+    cluster_idx = np.zeros((dim[0],), dtype=np.int)
     iterations = 0
     # get cluster mean
     while True:
         print iterations
         iterations += 1
-        # for each document, find cluster
+        old_cluster_idx = cluster_idx
+        # for each document, find cluster it belongs to
         for i in range(dim[0]):
-            prev_clust = cluster_idx[i]
             clust = 0
             doc = train[i, :]
             minDist = distance(cluster_center[0, :], doc)
@@ -40,27 +38,30 @@ def cluster(train, k):
                     clust = j
                     minDist = dist
             cluster_idx[i] = clust
-            cluster_count[clust] += 1
-            cluster_count[prev_clust] -= 1
 
         # initialize to zero
         meanCluster = np.zeros((k, dim[1]))
+        # kx1 array for keeping track of number of points in each cluster
+        cluster_count = np.zeros((k,), dtype=np.int)
         # add up values for each cluster
         for i in range(dim[0]):
             meanCluster[cluster_idx[i], :] += train[i, :]
+            cluster_count[cluster_idx[i]] += 1
         # find average
         converged = True
         for i in range(k):
             # get mean of words
             new_mean = meanCluster[i, :] / cluster_count[i]
             # compute distance between current mean and next mean
-            diff = distance(cluster_center[i, :], new_mean)
+            #diff = distance(cluster_center[i, :], new_mean)
             # put into cluster numpy
             cluster_center[i, :] = np.copy(new_mean)
-            if diff > 0.0000001:
-                converged = False
+            #if diff > 0.0000001:
+             #   converged = False
         # if converged, break out of loop
-        if converged:
+        #if converged:
+        #    break
+        if np.all(cluster_idx == old_cluster_idx):
             break
 
     # return cluster mean, and the index of which doc corresponds to which index
@@ -132,10 +133,11 @@ def main():
     # get parser
     k = int(sys.argv[1])
     print 1
-    p_train = Parser.Parser("tfidf_medium_large.txt")
+    #p_train = Parser.Parser("tfidf_medium_large.txt")
     print 2
     # parse training data
-    train = p_train.parse()
+    #train = p_train.parse()
+    train = pd.read_pickle("tfidf_medium.pkl")
     print 3
     cluster_center, cluster_idx = cluster(train.values, k)
     print 4

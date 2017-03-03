@@ -1,4 +1,4 @@
-mport pandas as pd
+import pandas as pd
 import numpy as np
 import k_means
 from matplotlib import pyplot as plt
