@@ -23,9 +23,9 @@ def cluster(train, k):
     iterations = 0
     # get cluster mean
     while True:
-        print iterations
+        #print iterations
         iterations += 1
-        old_cluster_idx = cluster_idx
+        old_cluster_idx = np.copy(cluster_idx)
         # for each document, find cluster it belongs to
         for i in range(dim[0]):
             clust = 0

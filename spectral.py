@@ -46,8 +46,8 @@ def computeEigen(laplacian, k):
 def main():
     global group_num
     k = int(sys.argv[1])
-    p = Parser.Parser("tfidf_medium.txt")
-    train = p.parse()
+    #p = Parser.Parser("tfidf_medium.txt")
+    train = pd.read_pickle("tfidf_medium.pkl")
     # affinity matrix, is numpy array
     affinity = computeAffinity(train.values)
     # degree matrix, is numpy array
