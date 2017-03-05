@@ -37,15 +37,18 @@ def computeLaplacian(affinity, degree):
 
 # returns the first k eigen vectors of the laplacian matrix
 def computeEigen(laplacian, k):
+    print laplacian.shape
     U, S, V = np.linalg.svd(laplacian)
-
+    print U.shape
+    print S.shape
+    print V.shape
     result = U[:,:k]
     return result
 
 def cluster(U, k):
     # run k_means
     k_means_result = k_means.cluster(U, k)
-    return (k_means_result[0], k_means_result[1], U)
+    return k_means_result
 
 def setup(train):
     # affinity matrix, is numpy array

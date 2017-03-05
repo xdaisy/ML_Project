@@ -21,6 +21,7 @@ def main():
     ks = range(1,21)
     spectral_laplacian = spectral.setup(train)
     for k in ks:
+        k = k * 5
         print "k: " + str(k)
         bestSSD_k_means = sys.maxint
         bestSSD_spectral = sys.maxint
@@ -34,8 +35,8 @@ def main():
             if ssd_k_means < bestSSD_k_means:
                 bestSSD_k_means = ssd_k_means
             print "Spectral"
-            cluster_center_spectral, cluster_idx_spectral, eigen_vectors = spectral.cluster(spectral_eigen, k)
-            ssd_spectral = SSD(eigen_vectors, cluster_center_spectral, cluster_idx_spectral)
+            cluster_center_spectral, cluster_idx_spectral = spectral.cluster(spectral_eigen, k)
+            ssd_spectral = SSD(spectral_eigen, cluster_center_spectral, cluster_idx_spectral)
             if ssd_spectral < bestSSD_spectral:
                 bestSSD_spectral = ssd_spectral
         # append best ssd
