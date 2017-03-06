@@ -42,7 +42,9 @@ def computeEigen(laplacian, k):
     print U.shape
     print S.shape
     print V.shape
-    result = U[:,:k]
+    result = U[:, :k]
+    for i in range(k):
+        result[:, i] = result[:, i] / np.linalg.norm(result[:, i])
     return result
 
 def cluster(U, k):

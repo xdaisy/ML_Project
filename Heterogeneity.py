@@ -15,7 +15,7 @@ def SSD(train, cluster_center, cluster_idx):
     return np.sum(ss)
 
 def main():
-    train = pd.read_pickle("tfidf_medium_large.pkl")
+    train = pd.read_pickle("tfidf_medium.pkl")
     heterogeneity_k_means = []
     heterogeneity_spectral = []
     ks = range(1,21)
@@ -48,14 +48,14 @@ def main():
     plt.xlabel("k")
     plt.title("k vs Heterogeneity for k means")
     plt.xticks(np.arange(0, max(ks), 2.0))
-    plt.savefig("heterogeneity_k_means_ml.png")
+    plt.savefig("heterogeneity_k_means_m.png")
     plt.figure(2)
     plt.plot(ks, heterogeneity_spectral, marker=".")
     plt.ylabel("Heterogeneity")
     plt.xlabel("k")
     plt.title("k vs Heterogeneity for spectral")
     plt.xticks(np.arange(0, max(ks), 2.0))
-    plt.savefig("heterogeneity_spectral_ml.png")
+    plt.savefig("heterogeneity_spectral_m.png")
 
 if __name__ == "__main__":
     main()
