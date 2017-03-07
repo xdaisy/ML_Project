@@ -4,6 +4,7 @@ import Parser
 import math
 import sys
 import k_means
+import PCA
 
 def distance(vector1, vector2):
     diff = vector2 - vector1
@@ -37,11 +38,7 @@ def computeLaplacian(affinity, degree):
 
 # returns the first k eigen vectors of the laplacian matrix
 def computeEigen(laplacian, k):
-    print laplacian.shape
     U, S, V = np.linalg.svd(laplacian)
-    print U.shape
-    print S.shape
-    print V.shape
     result = U[:, :k]
     for i in range(k):
         result[:, i] = result[:, i] / np.linalg.norm(result[:, i])

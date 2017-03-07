@@ -4,6 +4,7 @@ import k_means
 import spectral
 import sys
 from matplotlib import pyplot as plt
+import PCA
 from mpl_toolkits.mplot3d import Axes3D
 
 def main():
@@ -20,7 +21,7 @@ def main():
 '#B500FF', '#00FF78', '#FF6E41', '#005F39', '#6B6882', '#5FAD4E', '#A75740', '#A5FFD2', '#FFB167', 
 '#009BFF', '#E85EBE']
     train = pd.read_pickle("tfidf_medium_large.pkl")    
-    PCA_eigens = spectral.computeEigen(np.cov(train.values), 3)
+    PCA_eigens = PCA.reduce(train.values, 3)
 
     cluster_centers, cluster_idx = k_means.cluster(train.values, k)
     fig = plt.figure(1)
