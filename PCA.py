@@ -10,7 +10,7 @@ def reduce(values, k):
     return result
 
 def calc_mean(values):
-    mean = np.zeros(len(values.shape[1]))
+    mean = np.zeros(values.shape[1])
     for i in range(values.shape[1]):
         mean[i] = np.sum(values[:, i]) /len(values[:, i])
         values[:, i] = values[:, i] - mean[i]
