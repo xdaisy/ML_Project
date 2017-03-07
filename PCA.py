@@ -2,6 +2,8 @@ import numpy as np
 
 def reduce(values, k):
     mean = calc_mean(values)
+    for i in range(values.shape[1]):
+        values[:, i] = values[:, i] - mean[i]
     cov = np.cov(values)
     U, S, V = np.linalg.svd(cov)
     result = U[:, :k]
@@ -13,7 +15,6 @@ def calc_mean(values):
     mean = np.zeros(values.shape[1])
     for i in range(values.shape[1]):
         mean[i] = np.sum(values[:, i]) /len(values[:, i])
-        values[:, i] = values[:, i] - mean[i]
     return mean
 
 def calc_error(reconstructed, original):
