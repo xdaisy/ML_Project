@@ -11,21 +11,22 @@ def main():
 
     # get mean
     mean = PCA.calc_mean(data_np)
+    U, S, V = PCA.getEigenVectors(data_np)
 
     # get error for data space
     error = []
     featureSpace = []
     reconstructError = sys.maxint
-    k = 1
+    k = 0
     # find smallest feature space to reduce data set
     while reconstructError > .10:
         print "k: " + str(k)
-        featureSpace.append(k)
-        newSpace, U = PCA.reduce(data_np, k)
-        reconstructError = PCA.reconstruction_error(newSpace, data_np, mean, k)
+        k += 1
+        newSpace, U = PCA.reduce(data_np, k, U, mean)
+        reconstructError = PCA.reconstruction_error(newSpace, data_np, U, mean, k)
         print "reconstr error: " + str(reconstructError)
         error.append(reconstructError)
-        k += 1
+        featureSpace.append(k)
     print "Smallest feature space size: " + str(k - 1)
     plt.plot(featureSpace, error, marker=".")
     plt.ylabel("Reconstruction Error")
