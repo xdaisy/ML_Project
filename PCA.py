@@ -4,6 +4,7 @@ def getEigenVectors(values, mean):
     for i in range(values.shape[1]):
         values[:, i] = values[:, i] - mean[i]
     cov = np.cov(values.T)
+    print "got covariance"
     U, S, V = np.linalg.svd(cov)
     print "got eigen vectors"
     return U
