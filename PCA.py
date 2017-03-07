@@ -1,12 +1,16 @@
 import numpy as np
 
 def reduce(values, k):
+    print values.shape
     mean = calc_mean(values)
     for i in range(values.shape[1]):
         values[:, i] = values[:, i] - mean[i]
-    cov = np.cov(values)
+    cov = np.cov(values.T)
+    print "cov: " + str(cov.shape)
+    print "got covariance"
     U, S, V = np.linalg.svd(cov)
-    result = U[:, :k]
+    eigen_vectors = U[:, :k]
+    print "got eigen vectors"
     #for i in range(k):
     #    result[:, i] = result[:, i] / np.linalg.norm(result[:, i])
     z = np.zeros((values.shape[0], k))
@@ -18,7 +22,7 @@ def reduce(values, k):
             print U[:, k].shape
             print U.shape
             z[i, k] = np.dot((x_i - mean), U[:, k])
-    return z, U
+    return z, eigen_vectors
 
 def calc_mean(values):
     mean = np.zeros(values.shape[1])
