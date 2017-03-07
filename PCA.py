@@ -1,12 +1,12 @@
 import numpy as np
 
-def getEigenVectors(values):
-    mean = calc_mean(values)
+def getEigenVectors(values, mean):
     for i in range(values.shape[1]):
         values[:, i] = values[:, i] - mean[i]
     cov = np.cov(values.T)
     U, S, V = np.linalg.svd(cov)
-    return U, S, V
+    print "got eigen vectors"
+    return U
 
 def reduce(values, k, U, mean):
     eigen_vectors = U[:, :k]

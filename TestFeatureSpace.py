@@ -11,7 +11,7 @@ def main():
 
     # get mean
     mean = PCA.calc_mean(data_np)
-    U, S, V = PCA.getEigenVectors(data_np)
+    U = PCA.getEigenVectors(data_np, mean)
 
     # get error for data space
     error = []
@@ -19,7 +19,7 @@ def main():
     reconstructError = sys.maxint
     k = 0
     # find smallest feature space to reduce data set
-    while reconstructError > .10:
+    while k < 20:
         print "k: " + str(k)
         k += 1
         newSpace, U = PCA.reduce(data_np, k, U, mean)
