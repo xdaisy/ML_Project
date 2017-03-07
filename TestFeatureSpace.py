@@ -2,10 +2,11 @@ import numpy as np
 import pandas as pd
 import PCA
 from matplotlib import pyplot as plt
+import sys
 
 def main():
     # get dataset
-    data = pd.read_pickle("tfidf_medium.pkl")
+    data = pd.read_pickle("tfidf_small.pkl")
     data_np = data.values
 
     # get mean
@@ -14,13 +15,15 @@ def main():
     # get error for data space
     error = []
     featureSpace = []
-    reconstructError = 0.0
+    reconstructError = sys.maxint
     k = 1
     # find smallest feature space to reduce data set
     while reconstructError > .10:
+        print "k: " + str(k)
         featureSpace.append(k)
-        newSpace = PCA.reduce(data_np, k)
+        newSpace, U = PCA.reduce(data_np, k)
         reconstructError = PCA.reconstruction_error(newSpace, data_np, mean, k)
+        print "reconstr error: " + str(reconstructError)
         error.append(reconstructError)
         k += 1
     print "Smallest feature space size: " + str(k - 1)
