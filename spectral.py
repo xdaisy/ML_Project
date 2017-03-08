@@ -63,7 +63,7 @@ def setup(train):
 def main():
     global group_num
     k = int(sys.argv[1])
-    train = pd.read_pickle("cluster.pkl")
+    train = pd.read_pickle("tfidf_small.pkl")
     reduced_data = PCA.reduce(train.values, 50, PCA.getU("PCA_eigen_cluster.pkl").values, PCA.calc_mean(train.values))
     laplacian = setup(train.values)
     eigen_vectors = computeEigen(laplacian, k)
