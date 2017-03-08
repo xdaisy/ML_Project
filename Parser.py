@@ -44,6 +44,6 @@ class Parser(object):
         return article_comps[0], row
 
 if __name__ == "__main__":
-    p = Parser("cluster.txt")
+    p = Parser("cluster_mistake.txt")
     df = p.parse()
-    df.to_pickle('cluster.pkl')
+    df.to_pickle('cluster_mistake.pkl')
