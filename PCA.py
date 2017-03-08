@@ -26,7 +26,7 @@ def reduce(values, k, U, mean):
         x_i = values[i, :]
         for j in range(k):
             z[i, j] = np.dot((x_i - mean).T, U[:, j])
-    return z#, eigen_vectors
+    return z, eigen_vectors
 
 def calc_mean(values):
     mean = np.zeros(values.shape[1])

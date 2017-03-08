@@ -3,8 +3,8 @@ import pandas as pd
 import PCA
 import pickle
 
-data = pd.read_pickle("cluster.pkl")
+data = pd.read_pickle("cluster_mistake.pkl")
 df = pd.DataFrame(PCA.getEigenVectors(data.values, PCA.calc_mean(data.values)))
-df.to_pickle("PCA_eigen_cluster.pkl")
+df.to_pickle("PCA_eigen_cluster_mistake.pkl")
 
 

@@ -20,8 +20,7 @@ def main():
     reconstructError = 0.0
     k = 0
     # find smallest feature space to reduce data set
-    while math.fabs(prevError - reconstructError) > 0.00001:
-        k += 1
+    for k in range(10):
         print "k: " + str(k)
         prevError = reconstructError
         newSpace, eigen_vectors = PCA.reduce(data_np, k, U.values, mean)
