@@ -5,10 +5,12 @@ import math
 import sys
 import k_means
 import PCA
+from scipy import spatial
 
 def distance(vector1, vector2):
     diff = vector2 - vector1
     return math.sqrt(np.dot(diff.T, diff))
+    #return spatial.distance.cosine(vector1, vector2)
 
 
 def computeAffinity(train):
@@ -41,7 +43,7 @@ def computeEigen(laplacian, k):
     U, S, V = np.linalg.svd(laplacian)
     result = U[:, :k]
     for i in range(k):
-        result[:, i] = result[:, i] / np.linalg.norm(result[:, i])
+        result[:, i] = U[:, U.shape[1] - 1 - i] / np.linalg.norm(U[:, U.shape[1] - 1 - i])
     return result
 
 def cluster(U, k):
@@ -51,19 +53,21 @@ def cluster(U, k):
 
 def setup(train):
     # affinity matrix, is numpy array
-    affinity = computeAffinity(train.values)
+    affinity = computeAffinity(train)
     # degree matrix, is numpy array
     degree = computeDegree(affinity)
-    # laplcian matrix, is numpy array
+    # laplacian matrix, is numpy array
     return computeLaplacian(affinity, degree)
 
 
 def main():
     global group_num
     k = int(sys.argv[1])
-    #p = Parser.Parser("tfidf_medium.txt")
-    train = pd.read_pickle("tfidf_medium.pkl")
-    cluster_center, cluster_idx = cluster(train, k)
+    train = pd.read_pickle("cluster.pkl")
+    reduced_data = PCA.reduce(train.values, 50, PCA.getU("PCA_eigen_cluster.pkl").values, PCA.calc_mean(train.values))
+    laplacian = setup(train.values)
+    eigen_vectors = computeEigen(laplacian, k)
+    cluster_center, cluster_idx = cluster(eigen_vectors, k)
     # display the data:
     articles = train.index.values
     groupings = {}

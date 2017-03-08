@@ -20,26 +20,27 @@ def main():
 '#BB8800', '#43002C', '#DEFF74', '#00FFC6', '#FFE502', '#620E00', '#008F9C', '#98FF52', '#7544B1', 
 '#B500FF', '#00FF78', '#FF6E41', '#005F39', '#6B6882', '#5FAD4E', '#A75740', '#A5FFD2', '#FFB167', 
 '#009BFF', '#E85EBE']
-    train = pd.read_pickle("tfidf_medium_large.pkl")    
-    PCA_eigens = PCA.reduce(train.values, 3)
+    train = pd.read_pickle("cluster.pkl")
+    PCA_eigens = PCA.reduce(train.values, 3, PCA.getU("PCA_eigen_cluster.pkl").values, PCA.calc_mean(train.values))
 
+    reduced_data = PCA.reduce(train.values, 50, PCA.getU("PCA_eigen_cluster.pkl").values, PCA.calc_mean(train.values))
     cluster_centers, cluster_idx = k_means.cluster(train.values, k)
     fig = plt.figure(1)
     ax = fig.add_subplot(111, projection='3d')
     plt.title("Clusters using k means using k = " + str(k))
-    for i in range(0, PCA_eigens.shape[0], 10):
+    for i in range(0, PCA_eigens.shape[0], 1):
         ax.scatter(PCA_eigens[i, 0], PCA_eigens[i, 1], PCA_eigens[i, 2], c=colors[cluster_idx[i] % len(colors)])
-    plt.savefig("cluster_k_means_ml3D.png")
+    plt.savefig("cluster_k_means_cluster.png")
 
-    laplac = spectral.setup(train)
+    laplac = spectral.setup(train.values)
     eig = spectral.computeEigen(laplac, k)
     cluster_centers, cluster_idx = spectral.cluster(eig, k)
     fig = plt.figure(2)
     ax = fig.add_subplot(111, projection='3d')
     plt.title("Clusters using spectral clustering using k = " + str(k))
-    for i in range(0, PCA_eigens.shape[0], 10):
+    for i in range(0, PCA_eigens.shape[0], 1):
         ax.scatter(PCA_eigens[i, 0], PCA_eigens[i, 1], PCA_eigens[i, 2], c=colors[cluster_idx[i] % len(colors)])
-    plt.savefig("cluster_spectral_ml3D.png")
+    plt.savefig("cluster_spectral_cluster.png")
 
 if __name__ == "__main__":
     main()

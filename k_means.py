@@ -4,6 +4,8 @@ import Parser
 import random
 import math
 import sys
+from scipy import spatial
+import PCA
 
 # find k mean clusters
 def cluster(train, k):
@@ -116,8 +118,9 @@ def findBestDoc(x_i, train, cluster_idx, closestCluster):
 
 # compute distance
 def distance(vector1, vector2):
-    diff = vector2 - vector1
-    return math.sqrt(np.dot(diff.T, diff))
+    #diff = vector2 - vector1
+    #return math.sqrt(np.dot(diff.T, diff))
+    return spatial.distance.cosine(vector1, vector2)
 
 def too_close(row, chosen_rows, train):
     for i in range(len(chosen_rows)):
@@ -133,13 +136,11 @@ def main():
     # get parser
     k = int(sys.argv[1])
     print 1
-    #p_train = Parser.Parser("tfidf_medium_large.txt")
     print 2
-    # parse training data
-    #train = p_train.parse()
-    train = pd.read_pickle("tfidf_medium.pkl")
+    train = pd.read_pickle("cluster.pkl")
+    reduced_train = PCA.reduce(train.values, 50, PCA.getU("PCA_eigen_cluster.pkl").values, PCA.calc_mean(train.values))
     print 3
-    cluster_center, cluster_idx = cluster(train.values, k)
+    cluster_center, cluster_idx = cluster(reduced_train, k)
     print 4
     print cluster_center
     print cluster_center.shape

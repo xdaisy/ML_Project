@@ -1,12 +1,19 @@
 import numpy as np
+import pandas as pd
 
 def getEigenVectors(values, mean):
     for i in range(values.shape[1]):
         values[:, i] = values[:, i] - mean[i]
     cov = np.cov(values.T)
     print "got covariance"
+    print cov.shape
     U, S, V = np.linalg.svd(cov)
     print "got eigen vectors"
+    print U.shape
+    return U
+
+def getU(fileName):
+    U = pd.read_pickle(fileName)
     return U
 
 def reduce(values, k, U, mean):
@@ -19,7 +26,7 @@ def reduce(values, k, U, mean):
         x_i = values[i, :]
         for j in range(k):
             z[i, j] = np.dot((x_i - mean).T, U[:, j])
-    return z, eigen_vectors
+    return z#, eigen_vectors
 
 def calc_mean(values):
     mean = np.zeros(values.shape[1])
@@ -42,4 +49,4 @@ def reconstruction_error(reduced, original, eigen_vectors, mean, k):
             res += reduced[i, j] * eigen_vectors[:, j]
         reconstructed[i, :] = mean + res
     error = calc_error(reconstructed, original)
-    return error / baseline
+    return error #/ baseline
