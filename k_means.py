@@ -83,53 +83,11 @@ def computeClosestDoc(train, test, cluster_center, cluster_idx):
         results.write("test doc: " + test.index[i] + ", best doc: " + train.index[bestDoc] + "\n")
 
 
-# find closest cluster
-def findClosestCluster(x_i, cluster_center):
-    cluster = 0
-    minDist = distance(x_i, cluster_center[0, :])
-    dim = cluster_center.shape
-    for i in range(1, dim[0]):
-        # compute distance
-        dist = distance(x_i, cluster_center[i, :])
-        # set i as closest cluster if dist < minDist
-        if dist < minDist:
-            cluster = i
-            minDist = dist
-    # return index of closest cluster
-    return cluster
-
-# find closest doc to x_i
-def findBestDoc(x_i, train, cluster_idx, closestCluster):
-    bestDoc = -1
-    minDist = sys.maxsize
-    dim = train.shape
-    for i in range(dim[0]):
-        # if not same cluster, skip
-        if cluster_idx[i] != closestCluster:
-            pass
-        # compute distance between doc i in training set and current doc in test set
-        dist = distance(x_i, train[i, :])
-        # if have smaller dist, set bestDoc and minDist
-        if dist < minDist:
-            bestDoc = i
-            minDist = dist
-    # return index of best document
-    return bestDoc
-
 # compute distance
 def distance(vector1, vector2):
-    #diff = vector2 - vector1
-    #return math.sqrt(np.dot(diff.T, diff))
-    return spatial.distance.cosine(vector1, vector2)
+    return np.linalg.norm(vector1 - vector2)
+    #return spatial.distance.cosine(vector1, vector2)
 
-def too_close(row, chosen_rows, train):
-    for i in range(len(chosen_rows)):
-        print distance(train[row], train[chosen_rows[i]])
-        if distance(train[row], train[chosen_rows[i]]) < 15:
-            print "too close"
-            return True
-    print "good"
-    return False
 
 def main():
     global group_num
