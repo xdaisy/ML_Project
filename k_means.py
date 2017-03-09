@@ -8,7 +8,11 @@ from scipy import spatial
 import PCA
 
 # find k mean clusters
-def cluster(train, k):
+def cluster(train, k, Euc=False):
+    if Euc:
+        distance = distance_euc
+    else:
+        distance = distance_cos
     dim = train.shape
     cluster_center = np.zeros((k, dim[1]))
     # initialize cluster mean
@@ -69,24 +73,13 @@ def cluster(train, k):
     # return cluster mean, and the index of which doc corresponds to which index
     return cluster_center, cluster_idx
 
-# compute the closest document to each document in test data set
-def computeClosestDoc(train, test, cluster_center, cluster_idx):
-    # keep track of the results for each test doc
-    results = open("k_means_results.txt", "a")
-    results.seek(0)
-    results.truncate()
-    dim = test.shape
-    # go through each doc in test
-    for i in range(dim[0]):
-        closestCluster = findClosestCluster(test[i, :], cluster_center)
-        bestDoc = findBestDoc(test[i, :], train, cluster_idx, closestCluster)
-        results.write("test doc: " + test.index[i] + ", best doc: " + train.index[bestDoc] + "\n")
-
 
 # compute distance
-def distance(vector1, vector2):
+def distance_euc(vector1, vector2):
     return np.linalg.norm(vector1 - vector2)
-    #return spatial.distance.cosine(vector1, vector2)
+
+def distance_cos(vector1, vector2):
+    return spatial.distance.cosine(vector1, vector2)
 
 
 def main():
