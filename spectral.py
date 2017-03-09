@@ -46,9 +46,9 @@ def computeEigen(laplacian, k):
         result[:, i] = U[:, U.shape[1] - 1 - i] / np.linalg.norm(U[:, U.shape[1] - 1 - i])
     return result
 
-def cluster(U, k):
+def cluster(U, k, Euc=False):
     # run k_means
-    k_means_result = k_means.cluster(U, k)
+    k_means_result = k_means.cluster(U, k, Euc)
     return k_means_result
 
 def setup(train):
