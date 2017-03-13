@@ -13,10 +13,9 @@ def distance(vector1, vector2):
     #return spatial.distance.cosine(vector1, vector2)
 
 
-def computeAffinity(train):
+def computeAffinity(train, sigma):
     dim = train.shape
     affinity = np.zeros((dim[0], dim[0]))
-    sigma = 10
     for i in range(dim[0]):
         for j in range(i):
             aff_calc = np.e**(-1 * distance(train[i, :], train[j,:]) / (2 * (sigma**2)))
@@ -42,8 +41,10 @@ def computeLaplacian(affinity, degree):
 def computeEigen(laplacian, k):
     U, S, V = np.linalg.svd(laplacian)
     result = U[:, :k]
+
     for i in range(k):
-        result[:, i] = U[:, U.shape[1] - 1 - i] / np.linalg.norm(U[:, U.shape[1] - 1 - i])
+        #result[:, i] = U[:, U.shape[1] - 1 - i] / np.linalg.norm(U[:, U.shape[1] - 1 - i])
+        result[:, i] = U[:, U.shape[1] - 1 - i]
     return result
 
 def cluster(U, k, Euc=False):
@@ -51,9 +52,9 @@ def cluster(U, k, Euc=False):
     k_means_result = k_means.cluster(U, k, Euc)
     return k_means_result
 
-def setup(train):
+def setup(train, sig):
     # affinity matrix, is numpy array
-    affinity = computeAffinity(train)
+    affinity = computeAffinity(train, sig)
     # degree matrix, is numpy array
     degree = computeDegree(affinity)
     # laplacian matrix, is numpy array
